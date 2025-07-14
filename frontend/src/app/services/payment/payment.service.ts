@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { BASE_URL } from '../../env/env';
 
 export interface Payment {
   payment_id?: number | string; // Can be string from backend
@@ -25,7 +26,7 @@ export interface PaymentResponse {
   providedIn: 'root',
 })
 export class PaymentService {
-  private baseUrl = 'http://localhost/earrow/assessment/students-crud/backend';
+  private baseUrl = BASE_URL;
   private apiUrl = `${this.baseUrl}/payment`;
 
   private httpOptions = {

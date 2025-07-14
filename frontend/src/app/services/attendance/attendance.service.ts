@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { BASE_URL } from '../../env/env';
 
 export interface Teacher {
   teacher_id: string;
@@ -43,7 +44,7 @@ export interface ApiResponse<T> {
   providedIn: 'root',
 })
 export class AttendanceService {
-  private baseUrl = 'http://localhost/earrow/assessment/students-crud/backend'; // Update this to your backend URL
+  private baseUrl = BASE_URL; // Update this to your backend URL
 
   private httpOptions = {
     headers: new HttpHeaders({

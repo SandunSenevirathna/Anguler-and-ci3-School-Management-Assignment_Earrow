@@ -73,7 +73,7 @@ export class ShowAllStudentsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadStudents();
-    this.setupFilter();
+    //this.setupFilter();
   }
 
   ngAfterViewInit(): void {
@@ -153,7 +153,7 @@ export class ShowAllStudentsComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.students = data;
         this.dataSource.data = this.students;
-        console.log('Students loaded:', this.students);
+        // console.log('Students loaded:', this.students);
       },
       error: (err) => {
         console.error('Failed to load students:', err);
@@ -182,21 +182,6 @@ export class ShowAllStudentsComponent implements OnInit, AfterViewInit {
   formatGender(gender: string): string {
     if (!gender) return 'N/A';
     return gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
-  }
-
-  // UPDATED filter to work with new field names
-  setupFilter(): void {
-    this.dataSource.filterPredicate = (data: Student, filter: string) => {
-      const searchStr = filter.toLowerCase();
-      return (
-        data.student_name.toLowerCase().includes(searchStr) ||
-        data.student_id.toString().includes(searchStr) ||
-        this.calculateAge(data.birth_date).toString().includes(searchStr) ||
-        data.class_id.toString().includes(searchStr) ||
-        (data.gender ? data.gender.toLowerCase().includes(searchStr) : false) ||
-        (data.birth_date ? data.birth_date.includes(searchStr) : false)
-      );
-    };
   }
 
   // Filter functionality
@@ -244,7 +229,7 @@ export class ShowAllStudentsComponent implements OnInit, AfterViewInit {
   }
 
   // UPDATED: Open payment modal instead of viewing student details
-  onViewStudent(student: Student): void {
+  onMakePayment(student: Student): void {
     console.log('Opening payment modal for student:', student);
     this.openPaymentModal(student);
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-
+import { BASE_URL } from '../../env/env';
 // Interface for the backend API response
 export interface ApiResponse<T> {
   status: string;
@@ -25,8 +25,7 @@ export interface Student {
 })
 export class StudentService {
   // Your backend API base URL
-  private BACKEND_API_URL =
-    'http://localhost/earrow/assessment/students-crud/backend';
+  private BACKEND_API_URL = BASE_URL;
 
   // HTTP headers for requests
   private httpOptions = {
