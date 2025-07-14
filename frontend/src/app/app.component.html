@@ -1,0 +1,5 @@
+<!-- Show Login when not logged in -->
+<app-login *ngIf="!isLoggedIn"></app-login>
+
+<!-- Show Side Navigation when logged in -->
+<app-side-navigation *ngIf="isLoggedIn"></app-side-navigation>

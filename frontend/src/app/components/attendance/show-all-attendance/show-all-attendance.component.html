@@ -1,0 +1,251 @@
+<div class="attendance-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-left">
+      <h1 class="main-title">Attendance Management</h1>
+      <p class="subtitle">
+        Select students who are present and click "Stop Attendance" to save
+        <span *ngIf="userRole && username" class="user-info">
+          | Logged in as: <strong>{{ username }}</strong> ({{ userRole }})
+          <span *ngIf="teacherClass">
+            | Class: <strong>{{ teacherClass }}</strong></span
+          >
+        </span>
+      </p>
+    </div>
+    <div class="header-right">
+      <div class="time-date-section">
+        <div class="time">{{ getCurrentTime() }}</div>
+        <div class="date">{{ getCurrentDate() }}</div>
+      </div>
+      <div class="action-buttons">
+        <button
+          mat-raised-button
+          class="stop-attendance-btn"
+          [disabled]="!isAttendanceActive || isLoading"
+          (click)="onStopAttendance()"
+        >
+          STOP ATTENDANCE
+        </button>
+        <button
+          mat-raised-button
+          class="delete-retake-btn"
+          [disabled]="!isRefreshEnabled || isLoading"
+          (click)="onDeleteAndRetake()"
+        >
+          DELETE & RETAKE
+        </button>
+        <button
+          mat-raised-button
+          class="emergency-update-btn"
+          [disabled]="isLoading"
+          (click)="onEmergencyUpdate()"
+        >
+          REFRESH DATA
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Status Alert -->
+  <div
+    class="attendance-alert"
+    *ngIf="attendanceAlreadyTaken && attendanceMessage"
+  >
+    <div class="alert-card warning">
+      <mat-icon>info</mat-icon>
+      <div class="alert-content">
+        <h4>Attendance Already Taken</h4>
+        <p>{{ attendanceMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Name, student ID, class..."
+        [(ngModel)]="searchValue"
+        (input)="onSearch()"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- Selection Info -->
+    <div
+      class="selection-info"
+      *ngIf="dataSource.data.length > 0 && isAttendanceActive"
+    >
+      <span class="selection-text">
+        Selected: <strong>{{ selection.selected.length }}</strong> of
+        <strong>{{ dataSource.data.length }}</strong> students
+      </span>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="50"
+    ></mat-progress-spinner>
+    <p>Loading attendance data...</p>
+  </div>
+
+  <!-- Data Table Section -->
+  <div class="table-section" *ngIf="!isLoading">
+    <table mat-table [dataSource]="dataSource" class="attendance-table">
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [disabled]="!isAttendanceActive"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [disabled]="!isAttendanceActive"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Student Name Column -->
+      <ng-container matColumnDef="student_name">
+        <th mat-header-cell *matHeaderCellDef>Student Name</th>
+        <td mat-cell *matCellDef="let student">{{ student.student_name }}</td>
+      </ng-container>
+
+      <!-- Student ID Column -->
+      <ng-container matColumnDef="student_id">
+        <th mat-header-cell *matHeaderCellDef>Student ID</th>
+        <td mat-cell *matCellDef="let student">{{ student.student_id }}</td>
+      </ng-container>
+
+      <!-- Gender Column -->
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef>Gender</th>
+        <td mat-cell *matCellDef="let student">{{ student.gender }}</td>
+      </ng-container>
+
+      <!-- Birth Date Column -->
+      <ng-container matColumnDef="birth_date">
+        <th mat-header-cell *matHeaderCellDef>Birth Date</th>
+        <td mat-cell *matCellDef="let student">
+          {{ student.birth_date | date : "mediumDate" }}
+        </td>
+      </ng-container>
+
+      <!-- Class ID Column -->
+      <ng-container matColumnDef="class_id">
+        <th mat-header-cell *matHeaderCellDef>Class</th>
+        <td mat-cell *matCellDef="let student">{{ student.class_id }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.selected-row]="selection.isSelected(row) && isAttendanceActive"
+        [class.disabled-row]="!isAttendanceActive"
+      ></tr>
+    </table>
+
+    <!-- No Data Message -->
+    <div *ngIf="dataSource.data.length === 0" class="no-data">
+      <mat-icon>school</mat-icon>
+      <p>No students found for attendance.</p>
+      <button mat-raised-button color="primary" (click)="loadAttendanceData()">
+        Refresh Data
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      [pageSize]="10"
+      [length]="totalRecords"
+      showFirstLastButtons
+      class="attendance-paginator"
+    >
+    </mat-paginator>
+  </div>
+
+  <!-- Attendance Summary -->
+  <div
+    class="attendance-summary"
+    *ngIf="!isLoading && dataSource.data.length > 0"
+  >
+    <div class="summary-card">
+      <h3>Attendance Summary</h3>
+      <div class="summary-stats">
+        <div class="stat">
+          <span class="label">Total Students:</span>
+          <span class="value">{{ dataSource.data.length }}</span>
+        </div>
+        <div class="stat present">
+          <span class="label">Present (Selected):</span>
+          <span class="value">{{ getPresentCount() }}</span>
+        </div>
+        <div class="stat absent">
+          <span class="label">Absent (Not Selected):</span>
+          <span class="value">{{ getAbsentCount() }}</span>
+        </div>
+        <div class="stat percentage">
+          <span class="label">Attendance Rate:</span>
+          <span class="value">{{ getAttendancePercentage().toFixed(1) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div
+    class="instructions"
+    *ngIf="!isLoading && dataSource.data.length > 0 && isAttendanceActive"
+  >
+    <div class="instruction-card">
+      <h4>Instructions:</h4>
+      <ol>
+        <li>
+          Check the boxes next to students who are <strong>present</strong>
+        </li>
+        <li>Leave unchecked for students who are <strong>absent</strong></li>
+        <li>Click <strong>"STOP ATTENDANCE"</strong> to save</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Already Taken Instructions -->
+  <div
+    class="instructions"
+    *ngIf="
+      !isLoading &&
+      dataSource.data.length > 0 &&
+      !isAttendanceActive &&
+      attendanceAlreadyTaken
+    "
+  >
+    <div class="instruction-card taken">
+      <h4>Attendance Already Completed:</h4>
+      <ol>
+        <li>Attendance has been recorded for today</li>
+        <li>To modify attendance, click <strong>"DELETE & RETAKE"</strong></li>
+        <li>
+          This will delete today's records and allow you to take attendance
+          again
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>

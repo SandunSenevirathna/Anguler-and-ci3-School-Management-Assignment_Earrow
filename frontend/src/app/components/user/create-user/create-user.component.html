@@ -1,0 +1,229 @@
+<!-- create-user.component.html -->
+<div class="modal-overlay" (click)="closeModalHandler()">
+  <div class="registration-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">
+        {{ isEditMode ? "Update User Information" : "New User Registration" }}
+      </h2>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="closeModalHandler()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content">
+      <!-- Profile Image Section -->
+      <div class="profile-image-section">
+        <div class="profile-image-container">
+          <div class="profile-image" (click)="selectProfileImage()">
+            <mat-icon *ngIf="!selectedImage">add_a_photo</mat-icon>
+            <img *ngIf="selectedImage" [src]="selectedImage" alt="Profile" />
+          </div>
+          <input
+            type="file"
+            #fileInput
+            (change)="onImageSelected($event)"
+            accept="image/*"
+            style="display: none"
+          />
+        </div>
+      </div>
+
+      <!-- User Registration Form -->
+      <form [formGroup]="registrationForm" class="registration-form">
+        <!-- Username -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Username</mat-label>
+            <input
+              matInput
+              formControlName="username"
+              placeholder="Enter username (letters, numbers, underscore only)"
+              autocomplete="username"
+            />
+            <mat-error
+              *ngIf="registrationForm.get('username')?.hasError('required')"
+            >
+              Username is required
+            </mat-error>
+            <mat-error
+              *ngIf="registrationForm.get('username')?.hasError('minlength')"
+            >
+              Username must be at least 3 characters
+            </mat-error>
+            <mat-error
+              *ngIf="registrationForm.get('username')?.hasError('maxlength')"
+            >
+              Username must be less than 50 characters
+            </mat-error>
+            <mat-error
+              *ngIf="
+                registrationForm.get('username')?.hasError('invalidUsername')
+              "
+            >
+              Username can only contain letters, numbers, and underscores
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Password Fields Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>{{
+                isEditMode ? "New Password (optional)" : "Password"
+              }}</mat-label>
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                [placeholder]="
+                  isEditMode
+                    ? 'Leave blank to keep current password'
+                    : 'Enter password'
+                "
+                autocomplete="new-password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hidePassword"
+              >
+                <mat-icon>{{
+                  hidePassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              <mat-error
+                *ngIf="
+                  registrationForm.get('password')?.hasError('required') &&
+                  !isEditMode
+                "
+              >
+                Password is required
+              </mat-error>
+              <mat-error
+                *ngIf="registrationForm.get('password')?.hasError('minlength')"
+              >
+                Password must be at least 8 characters
+              </mat-error>
+              <mat-error
+                *ngIf="registrationForm.get('password')?.hasError('pattern')"
+              >
+                Password must contain at least one uppercase letter, one
+                lowercase letter, and one number
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>{{
+                isEditMode ? "Confirm New Password" : "Confirm Password"
+              }}</mat-label>
+              <input
+                matInput
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="Re-enter password"
+                autocomplete="new-password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hideConfirmPassword"
+              >
+                <mat-icon>{{
+                  hideConfirmPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              <mat-error
+                *ngIf="
+                  registrationForm
+                    .get('confirmPassword')
+                    ?.hasError('required') &&
+                  !isEditMode &&
+                  registrationForm.get('password')?.value
+                "
+              >
+                Password confirmation is required
+              </mat-error>
+              <mat-error
+                *ngIf="
+                  registrationForm.hasError('passwordMismatch') &&
+                  registrationForm.get('confirmPassword')?.touched &&
+                  (registrationForm.get('password')?.value ||
+                    registrationForm.get('confirmPassword')?.value)
+                "
+              >
+                Passwords do not match
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option *ngFor="let role of roles" [value]="role.value">
+                <div class="role-option">
+                  <mat-icon class="role-icon">
+                    {{
+                      role.value === "Admin"
+                        ? "admin_panel_settings"
+                        : role.value === "Teacher"
+                        ? "school"
+                        : "person"
+                    }}
+                  </mat-icon>
+                  <span class="role-label">{{ role.label }}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="registrationForm.get('role')?.hasError('required')"
+            >
+              Role selection is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            class="register-btn"
+            (click)="onRegister()"
+            [disabled]="isSubmitting"
+          >
+            <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+            <span *ngIf="!isSubmitting">
+              {{ isEditMode ? "UPDATE" : "REGISTER" }}
+            </span>
+          </button>
+          <button
+            mat-stroked-button
+            [color]="isEditMode ? 'warn' : 'warn'"
+            class="reset-btn"
+            (click)="onReset()"
+            [disabled]="isSubmitting"
+          >
+            {{ isEditMode ? "DELETE" : "RESET" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

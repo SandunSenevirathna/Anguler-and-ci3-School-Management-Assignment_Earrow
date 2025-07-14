@@ -1,0 +1,194 @@
+<!-- UPDATED show-all-students.component.html with Payment Integration -->
+<div class="student-management-container" [class.blurred]="isAnyModalOpen">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">Student Management</h1>
+        <p class="page-subtitle">
+          Manage and oversee all registered students in your institution with
+          advanced tools and insights
+        </p>
+      </div>
+      <div class="action-section">
+        <button
+          mat-raised-button
+          color="primary"
+          class="new-registration-btn"
+          (click)="openModal()"
+        >
+          NEW REGISTRATION
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <mat-card class="content-card">
+      <!-- Search Section -->
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            placeholder="Name, ID, class, gender, etc..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="applyFilter()"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Table Section -->
+      <div class="table-wrapper">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="students-table"
+          matSort
+        >
+          <!-- UPDATED: Student ID Column -->
+          <ng-container matColumnDef="student_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Student ID
+            </th>
+            <td mat-cell *matCellDef="let student">{{ student.student_id }}</td>
+          </ng-container>
+
+          <!-- UPDATED: Student Name Column -->
+          <ng-container matColumnDef="student_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Student Name
+            </th>
+            <td mat-cell *matCellDef="let student">
+              {{ student.student_name }}
+            </td>
+          </ng-container>
+
+          <!-- UPDATED: Birth Date Column -->
+          <ng-container matColumnDef="birth_date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Birth Date
+            </th>
+            <td mat-cell *matCellDef="let student">
+              {{ formatBirthDate(student.birth_date) }}
+            </td>
+          </ng-container>
+
+          <!-- NEW: Age Column (Calculated) -->
+          <ng-container matColumnDef="age">
+            <th mat-header-cell *matHeaderCellDef>Age</th>
+            <td mat-cell *matCellDef="let student">
+              {{ calculateAge(student.birth_date) }} years
+            </td>
+          </ng-container>
+
+          <!-- NEW: Gender Column -->
+          <ng-container matColumnDef="gender">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Gender</th>
+            <td mat-cell *matCellDef="let student">
+              {{ formatGender(student.gender) }}
+            </td>
+          </ng-container>
+
+          <!-- UPDATED: Class ID Column -->
+          <ng-container matColumnDef="class_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Class</th>
+            <td mat-cell *matCellDef="let student">
+              {{ student.class_id }}
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let student">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onEditStudent(student)"
+                matTooltip="Edit Student"
+                class="action-btn"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <!-- UPDATED: Changed tooltip and icon to reflect payment functionality -->
+              <button
+                mat-icon-button
+                color="accent"
+                (click)="onViewStudent(student)"
+                matTooltip="Make Payment"
+                class="action-btn"
+              >
+                <mat-icon>payments</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="onDeleteStudent(student)"
+                matTooltip="Delete Student"
+                class="action-btn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="students.length === 0">
+          <mat-icon class="empty-icon">school</mat-icon>
+          <h3>No Students Found</h3>
+          <p>No students have been registered yet.</p>
+          <button mat-raised-button color="primary" (click)="openModal()">
+            Register First Student
+          </button>
+        </div>
+
+        <!-- No Search Results -->
+        <div
+          class="empty-state"
+          *ngIf="students.length > 0 && dataSource.filteredData.length === 0"
+        >
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3>No Results Found</h3>
+          <p>No students match your search criteria.</p>
+          <button mat-stroked-button color="primary" (click)="clearSearch()">
+            Clear Search
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        class="table-paginator"
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+        aria-label="Select page of students"
+      >
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Registration/Edit Modal -->
+<app-students-registration
+  *ngIf="showModal"
+  [studentToEdit]="selectedStudentForEdit"
+  (closeModal)="closeModal()"
+  (studentRegistered)="onStudentRegistered($event)"
+  (studentDeleted)="onStudentDeleted($event)"
+>
+</app-students-registration>
+
+<!-- Payment Modal -->
+<app-make-payment
+  *ngIf="showPaymentModal"
+  [studentData]="selectedStudentForPayment"
+  (closeModal)="closePaymentModal()"
+>
+</app-make-payment>

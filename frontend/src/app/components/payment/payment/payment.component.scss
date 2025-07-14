@@ -1,0 +1,416 @@
+/* Payment Management Component Styles */
+
+.payment-management-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+// Header Section
+.header-section {
+  margin-bottom: 20px;
+
+  .header-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title-section {
+      flex: 1;
+
+      .page-title {
+        margin: 0 0 8px 0;
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .page-subtitle {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    }
+
+    .action-section {
+      .refresh-btn {
+        background-color: #2196f3;
+        color: white;
+        font-weight: 500;
+        padding: 10px 24px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &:hover {
+          background-color: #1976d2;
+        }
+
+        mat-icon {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+// Statistics Section
+.stats-section {
+  margin-bottom: 20px;
+
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2196f3;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  .content-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .mat-mdc-card-content {
+      padding: 0;
+    }
+  }
+}
+
+// Search Section
+.search-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+
+  .search-field {
+    width: 100%;
+    max-width: 400px;
+
+    .mdc-text-field--outlined
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__notch,
+    .mdc-text-field--outlined
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: #e0e0e0;
+    }
+
+    &:hover
+      .mdc-text-field--outlined
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    &:hover
+      .mdc-text-field--outlined
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    &:hover
+      .mdc-text-field--outlined
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: #2196f3;
+    }
+
+    input {
+      font-size: 14px;
+      color: #333;
+    }
+
+    mat-icon {
+      color: #666;
+    }
+  }
+}
+
+// Table Section
+.table-wrapper {
+  position: relative;
+
+  .payments-table {
+    width: 100%;
+
+    // Header styling
+    .mat-mdc-header-row {
+      background-color: #fafafa;
+
+      .mat-mdc-header-cell {
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 16px 24px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+    }
+
+    // Row styling
+    .mat-mdc-row {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+
+      .mat-mdc-cell {
+        padding: 16px 24px;
+        font-size: 14px;
+        color: #333;
+        border-bottom: none;
+
+        // Service type badge
+        .service-type-badge {
+          background-color: #e3f2fd;
+          color: #1976d2;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+
+        // Amount value styling
+        .amount-value {
+          font-weight: 600;
+          color: #4caf50;
+          font-size: 15px;
+        }
+
+        // Action buttons
+        button[mat-icon-button] {
+          width: 36px;
+          height: 36px;
+          margin-right: 4px;
+          transition: all 0.2s ease;
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          // View button (primary)
+          &[color="primary"] {
+            color: #2196f3;
+
+            &:hover {
+              background-color: rgba(33, 150, 243, 0.04);
+            }
+          }
+
+          // Edit button (accent)
+          &[color="accent"] {
+            color: #ff9800;
+
+            &:hover {
+              background-color: rgba(255, 152, 0, 0.04);
+            }
+          }
+
+          // Delete button (warn)
+          &[color="warn"] {
+            color: #f44336;
+
+            &:hover {
+              background-color: rgba(244, 67, 54, 0.04);
+            }
+          }
+
+          mat-icon {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  button {
+    font-weight: 500;
+  }
+}
+
+// Pagination
+.table-paginator {
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+
+  .mat-mdc-paginator-range-label {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .mat-mdc-icon-button {
+    color: #666;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .payment-management-container {
+    padding: 16px;
+  }
+
+  .header-section .header-content {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+
+    .action-section {
+      width: 100%;
+
+      .refresh-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .stats-section .stats-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .search-section {
+    padding: 16px;
+
+    .search-field {
+      max-width: 100%;
+    }
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+
+    .payments-table {
+      min-width: 1000px; // INCREASED for student_name column
+
+      .mat-mdc-header-cell,
+      .mat-mdc-cell {
+        padding: 12px 16px;
+
+        &:first-child {
+          padding-left: 24px;
+        }
+
+        &:last-child {
+          padding-right: 24px;
+        }
+      }
+
+      // Mobile action buttons
+      .mat-mdc-cell {
+        button[mat-icon-button] {
+          width: 32px;
+          height: 32px;
+          margin-right: 2px;
+
+          mat-icon {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header-section .header-content {
+    padding: 20px;
+
+    .title-section .page-title {
+      font-size: 24px;
+    }
+  }
+
+  .search-section {
+    padding: 16px;
+  }
+
+  .payments-table {
+    .mat-mdc-header-cell,
+    .mat-mdc-cell {
+      padding: 8px 12px;
+      font-size: 13px;
+
+      &:first-child {
+        padding-left: 16px;
+      }
+
+      &:last-child {
+        padding-right: 16px;
+      }
+    }
+
+    // Smaller action buttons on mobile
+    .mat-mdc-cell {
+      button[mat-icon-button] {
+        width: 28px;
+        height: 28px;
+        margin-right: 1px;
+
+        mat-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

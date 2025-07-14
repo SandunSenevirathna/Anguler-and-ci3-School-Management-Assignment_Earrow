@@ -1,0 +1,141 @@
+<!-- UPDATED teacher-registration.component.html -->
+<div class="modal-overlay" (click)="closeModalHandler()">
+  <div class="registration-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">
+        {{
+          isEditMode ? "Update Teacher Information" : "New Teacher Registration"
+        }}
+      </h2>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="closeModalHandler()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content">
+      <!-- Profile Image Section -->
+      <div class="profile-image-section">
+        <div class="profile-image-container">
+          <div class="profile-image" (click)="selectProfileImage()">
+            <mat-icon *ngIf="!selectedImage">add_a_photo</mat-icon>
+            <img *ngIf="selectedImage" [src]="selectedImage" alt="Profile" />
+          </div>
+          <input
+            type="file"
+            #fileInput
+            (change)="onImageSelected($event)"
+            accept="image/*"
+            style="display: none"
+          />
+        </div>
+      </div>
+
+      <!-- UPDATED Registration Form with new fields -->
+      <form [formGroup]="registrationForm" class="registration-form">
+        <!-- UPDATED: Teacher Name -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Teacher Name</mat-label>
+            <input
+              matInput
+              formControlName="teacher_name"
+              placeholder="Enter teacher name"
+            />
+            <mat-error
+              *ngIf="registrationForm.get('teacher_name')?.hasError('required')"
+            >
+              Teacher name is required
+            </mat-error>
+            <mat-error
+              *ngIf="
+                registrationForm.get('teacher_name')?.hasError('minlength')
+              "
+            >
+              Teacher name must be at least 2 characters
+            </mat-error>
+            <mat-error
+              *ngIf="
+                registrationForm.get('teacher_name')?.hasError('maxlength')
+              "
+            >
+              Teacher name must be at most 100 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- UPDATED: Class Name -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Class Name</mat-label>
+            <input
+              matInput
+              formControlName="class_name"
+              placeholder="Enter class name (e.g., 10-A, Grade 5)"
+            />
+            <mat-error
+              *ngIf="registrationForm.get('class_name')?.hasError('required')"
+            >
+              Class name is required
+            </mat-error>
+            <mat-error
+              *ngIf="registrationForm.get('class_name')?.hasError('minlength')"
+            >
+              Class name must be at least 1 character
+            </mat-error>
+            <mat-error
+              *ngIf="registrationForm.get('class_name')?.hasError('maxlength')"
+            >
+              Class name must be at most 10 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Gender Selection -->
+        <div class="form-group full-width">
+          <div class="gender-section">
+            <label class="gender-label">Gender</label>
+            <mat-radio-group formControlName="gender" class="gender-group">
+              <mat-radio-button value="Male" class="gender-option">
+                Male
+              </mat-radio-button>
+              <mat-radio-button value="Female" class="gender-option">
+                Female
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Actions -->
+    <div class="modal-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-btn"
+        (click)="onRegister()"
+        [disabled]="registrationForm.invalid || isSubmitting"
+      >
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        <span *ngIf="!isSubmitting">
+          {{ isEditMode ? "UPDATE" : "REGISTER" }}
+        </span>
+      </button>
+      <button
+        mat-stroked-button
+        [color]="isEditMode ? 'warn' : 'warn'"
+        class="reset-btn"
+        (click)="onReset()"
+        [disabled]="isSubmitting"
+      >
+        {{ isEditMode ? "DELETE" : "RESET" }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+<!-- Make Payment Modal -->
+<div class="modal-overlay" (click)="closeModalHandler()">
+  <div class="payment-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Make Payment</h2>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="closeModalHandler()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content">
+      <!-- Payment Icon Section -->
+      <div class="payment-icon-section">
+        <div class="payment-icon-container">
+          <div class="payment-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <form [formGroup]="paymentForm" class="payment-form">
+        <!-- Full Name -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Full Name</mat-label>
+            <input
+              matInput
+              formControlName="full_name"
+              placeholder="Enter full name"
+              readonly
+            />
+            <mat-error
+              *ngIf="paymentForm.get('full_name')?.hasError('required')"
+            >
+              Full name is required
+            </mat-error>
+            <mat-error
+              *ngIf="paymentForm.get('full_name')?.hasError('minlength')"
+            >
+              Full name must be at least 2 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Service Type -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Service Type</mat-label>
+            <mat-select
+              formControlName="service_type"
+              placeholder="Select service type"
+            >
+              <mat-option
+                *ngFor="let service of serviceTypes"
+                [value]="service"
+              >
+                {{ service }}
+              </mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="paymentForm.get('service_type')?.hasError('required')"
+            >
+              Service type is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Amount -->
+        <div class="form-group full-width">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Amount $</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="amount"
+              placeholder="Enter amount"
+              (input)="onAmountInput($event)"
+            />
+            <span matPrefix>$&nbsp;</span>
+            <mat-error *ngIf="paymentForm.get('amount')?.hasError('required')">
+              Amount is required
+            </mat-error>
+            <mat-error *ngIf="paymentForm.get('amount')?.hasError('min')">
+              Amount must be greater than 0
+            </mat-error>
+            <mat-error *ngIf="paymentForm.get('amount')?.hasError('pattern')">
+              Please enter a valid amount (e.g., 100.50)
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Actions -->
+    <div class="modal-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="payment-btn"
+        (click)="onMakePayment()"
+        [disabled]="paymentForm.invalid || isSubmitting"
+      >
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        <span *ngIf="!isSubmitting">MAKE THE PAYMENT</span>
+        <span *ngIf="isSubmitting">PROCESSING...</span>
+      </button>
+    </div>
+  </div>
+</div>

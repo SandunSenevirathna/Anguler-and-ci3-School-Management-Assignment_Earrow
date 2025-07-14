@@ -1,0 +1,26 @@
+// Global app styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
+}
+
+// Remove any default Material Design margins/padding
+.mat-sidenav-container,
+.mat-sidenav-content,
+.mat-sidenav {
+  margin: 0;
+  padding: 0;
+}
+
+// Global styles for routed components
+router-outlet + * {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 48px);
+}

@@ -1,0 +1,205 @@
+<!-- Payment Management Container -->
+<div class="payment-management-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">Payment Management</h1>
+        <p class="page-subtitle">
+          View and manage all payment records with detailed transaction
+          information
+        </p>
+      </div>
+      <div class="action-section">
+        <button
+          mat-raised-button
+          color="primary"
+          class="refresh-btn"
+          (click)="refreshPayments()"
+        >
+          <mat-icon>refresh</mat-icon>
+          REFRESH
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Section -->
+  <div class="stats-section">
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-value">{{ getPaymentCount() }}</div>
+        <div class="stat-label">Total Payments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ formatAmount(getTotalAmount()) }}</div>
+        <div class="stat-label">Total Amount</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <mat-card class="content-card">
+      <!-- Search Section -->
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            placeholder="Payment ID, Student ID, Student Name, Service Type, Amount..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="applyFilter()"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Table Section -->
+      <div class="table-wrapper">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="payments-table"
+          matSort
+        >
+          <!-- Payment ID Column -->
+          <ng-container matColumnDef="payment_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Payment ID
+            </th>
+            <td mat-cell *matCellDef="let payment">
+              #{{ payment.payment_id }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="student_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Student ID
+            </th>
+            <td mat-cell *matCellDef="let payment">{{ payment.student_id }}</td>
+          </ng-container>
+
+          <!-- ADDED: Student Name Column -->
+          <ng-container matColumnDef="student_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Student Name
+            </th>
+            <td mat-cell *matCellDef="let payment">
+              {{ payment.student_name || "N/A" }}
+            </td>
+          </ng-container>
+
+          <!-- Service Type Column -->
+          <ng-container matColumnDef="service_type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Service Type
+            </th>
+            <td mat-cell *matCellDef="let payment">
+              <span class="service-type-badge">{{ payment.service_type }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Amount Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+            <td mat-cell *matCellDef="let payment">
+              <span class="amount-value">{{
+                formatAmount(payment.amount)
+              }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Payment Date Column -->
+          <ng-container matColumnDef="payment_date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Payment Date
+            </th>
+            <td mat-cell *matCellDef="let payment">
+              {{ formatDate(payment.payment_date) }}
+            </td>
+          </ng-container>
+
+          <!-- Payment Time Column -->
+          <ng-container matColumnDef="payment_time">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Payment Time
+            </th>
+            <td mat-cell *matCellDef="let payment">
+              {{ formatTime(payment.payment_time) }}
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let payment">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onViewPayment(payment)"
+                matTooltip="View Payment Details"
+                class="action-btn"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="accent"
+                (click)="onEditPayment(payment)"
+                matTooltip="Edit Payment"
+                class="action-btn"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="onDeletePayment(payment)"
+                matTooltip="Delete Payment"
+                class="action-btn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="payments.length === 0">
+          <mat-icon class="empty-icon">payment</mat-icon>
+          <h3>No Payments Found</h3>
+          <p>No payment records have been created yet.</p>
+          <button mat-raised-button color="primary" (click)="refreshPayments()">
+            Refresh Data
+          </button>
+        </div>
+
+        <!-- No Search Results -->
+        <div
+          class="empty-state"
+          *ngIf="payments.length > 0 && dataSource.filteredData.length === 0"
+        >
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3>No Results Found</h3>
+          <p>No payments match your search criteria.</p>
+          <button mat-stroked-button color="primary" (click)="clearSearch()">
+            Clear Search
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        class="table-paginator"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        showFirstLastButtons
+        aria-label="Select page of payments"
+      >
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>
