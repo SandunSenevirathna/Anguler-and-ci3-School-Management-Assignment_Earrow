@@ -323,7 +323,7 @@ class Student_model extends CI_Model
         $age = $birth->diff($today);
 
         // Age should be between 3 and 30 years (reasonable for students)
-        if ($birth > $today || $age->y < 3 || $age->y > 30) {
+        if ($birth > $today || $age->y < 5 || $age->y > 19) {
             return false;
         }
 

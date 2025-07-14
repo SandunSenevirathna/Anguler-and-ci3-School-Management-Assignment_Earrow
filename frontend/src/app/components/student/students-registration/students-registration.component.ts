@@ -161,6 +161,7 @@ export class StudentsRegistrationComponent implements OnInit {
         class_id: parseInt(formData.class_id, 10), // FIXED: Convert to integer
       };
 
+      console.log('Submitting student data:', studentData);
       // Validate class_id is a valid number
       if (isNaN(studentData.class_id!) || studentData.class_id! <= 0) {
         alert('Please enter a valid class ID (positive number)');
